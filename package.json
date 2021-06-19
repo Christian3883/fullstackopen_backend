@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "nodemon node index.js",
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ."
+    "test": "echo \"Error: no test specified\" && exit 1",    
+    "deploy": "git push heroku main"
   },
   "author": "Christian Gomez",
   "license": "MIT",
