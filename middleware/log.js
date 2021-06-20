@@ -1,4 +1,4 @@
-const requestLogger = (request, response, next) => {
+function requestLogger (request, response, next) {
   console.log('Method:', request.method)
   console.log('Path:  ', request.path)
   console.log('Body:  ', request.body)
@@ -6,7 +6,7 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
-const unknownEndpoint = (request, response) => {
+function unknownEndpoint (request, response) {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 
