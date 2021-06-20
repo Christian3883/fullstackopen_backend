@@ -4,15 +4,16 @@ const express = require('express')
 const app = express()
 const morgan = require('morgan')
 const cors = require('cors')
-const middleware = require('./middleware/log')
+const requestLogger = require('./middleware/requestLogger.js')
+const unknownEndpoint = require('./middleware/unknownEndpoint.js')
+const errorHandler = require('./middleware/errorHandler.js')
 const Person = require('./models/person')
 
 app.use(express.json())
 app.use(express.static('build'))
 app.use(morgan('combined'))
 app.use(cors())
-
-// app.use(middleware.requestLogger)
+app.use(requestLogger)
 
 app.get('/', (request, response) => {
   console.log('Phonebook - App')
@@ -104,22 +105,7 @@ app.put('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-// app.use(middleware.unknownEndpoint)
-// app.use(unknownEndpoint)
-
-const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
-
-  if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' })
-  } else if (error.name === 'ValidationError') {
-    return response.status(400).json({ error: error.message })
-  }
-
-  // return response.status(500).send({ error: `${error}` })
-
-  next(error)
-}
+app.use(unknownEndpoint)
 app.use(errorHandler)
 
 const PORT = process.env.PORT
