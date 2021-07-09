@@ -10,6 +10,8 @@ const logger = require('./utils/logger')
 const morgan = require('morgan')
 const mongoose = require('mongoose')
 
+middlewareSentry.setHeadersHandlers()
+
 logger.info('connecting to', config.MONGODB_URI)
 
 mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
@@ -20,7 +22,6 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology
     logger.error('error connecting to MongoDB:', error.message)
   })
 
-middlewareSentry.setHeadersHandlers()
 app.use(cors())
 app.use(express.static('build'))
 app.use(express.json())
