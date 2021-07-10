@@ -1,15 +1,23 @@
 const personsRouter = require('express').Router()
 const Person = require('../models/person')
 
-personsRouter.get('/', (request, response, next) => {
+personsRouter.get('/', async (request, response, next) => {
+  /*
   Person.find({})
     .then(persons => {
       response.json(persons)
     })
     .catch(error => next(error))
+    */
+  try {
+    const persons = await Person.find({})
+    response.json(persons)
+  } catch (error) {
+    next(error)
+  }
 })
 
-personsRouter.get('/:id', (request, response, next) => {
+personsRouter.get('/:id', async (request, response, next) => {
   const id = request.params.id
 
   Person.findById(id)
@@ -21,6 +29,8 @@ personsRouter.get('/:id', (request, response, next) => {
       }
     })
     .catch(error => next(error))
+
+  // const person = await Person.findById(id)
 })
 
 personsRouter.delete('/:id', (request, response, next) => {
@@ -38,9 +48,10 @@ personsRouter.delete('/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-personsRouter.post('/', (request, response, next) => {
+personsRouter.post('/', async (request, response, next) => {
   const body = request.body
 
+  /*
   Person.find({ name: body.name })
     .then(person => {
       if (person.length > 0) {
@@ -61,6 +72,23 @@ personsRouter.post('/', (request, response, next) => {
       }
     })
     .catch(error => next(error))
+    */
+  const personsInDb = await Person.find({ name: body.name })
+  if (personsInDb.length > 0) {
+    return response.status(400).json({ error: 'name must be unique' })
+  }
+
+  const person = new Person({
+    name: body.name,
+    number: body.number
+  })
+
+  try {
+    const savedPerson = await person.save()
+    response.status(201).json(savedPerson)
+  } catch (error) {
+    next(error)
+  }
 })
 
 personsRouter.put('/:id', (request, response, next) => {
